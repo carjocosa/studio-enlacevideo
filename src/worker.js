@@ -103,3 +103,45 @@ export class StudioRoom {
     const s = this.sessions.get(id);
     if (s) { try { s.ws.send(JSON.stringify(data)); } catch(e) {} }
   }
+
+  notifyDirector(data) {
+    for (const [, s] of this.sessions.entries()) {
+      if (s.role === "director") { try { s.ws.send(JSON.stringify(data)); } catch(e) {} }
+    }
+  }
+
+  notifyProgram(data) {
+    for (const [, s] of this.sessions.entries()) {
+      if (s.role === "program") { try { s.ws.send(JSON.stringify(data)); } catch(e) {} }
+    }
+  }
+
+  broadcastAll(data) {
+    for (const [, s] of this.sessions.entries()) {
+      try { s.ws.send(JSON.stringify(data)); } catch(e) {}
+    }
+  }
+
+  kickGuest(guestId) {
+    const guest = this.sessions.get(guestId);
+    if (guest) {
+      try { guest.ws.send(JSON.stringify({ type: "kicked" })); guest.ws.close(); } catch(e) {}
+      this.sessions.delete(guestId);
+      this.notifyProgram({ type: "guest-left", guestId });
+    }
+  }
+}
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    if (url.pathname.startsWith("/signal/")) {
+      const roomName = url.pathname.split("/signal/")[1];
+      if (!roomName) return new Response("Room required", { status: 400 });
+      const id   = env.STUDIO_ROOM.idFromName(roomName);
+      const room = env.STUDIO_ROOM.get(id);
+      return room.fetch(request);
+    }
+    return env.ASSETS.fetch(request);
+  }
+};
