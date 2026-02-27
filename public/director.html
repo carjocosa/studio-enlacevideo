@@ -13,7 +13,6 @@
     * { box-sizing:border-box; margin:0; padding:0; }
     body { font-family:'Segoe UI',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 
-    /* ── TOPBAR ── */
     .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0.75rem 1.5rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
     .topbar-brand h1 { font-size:1.2rem; letter-spacing:2px; color:#fff; }
     .topbar-brand h1 span { color:var(--accent); }
@@ -29,26 +28,20 @@
     .btn-danger { background:#3a1a1a; border:1px solid #6a2a2a; color:var(--accent); }
     .btn-danger:hover { background:#4a2020; }
 
-    /* ── LAYOUT PRINCIPAL ── */
-    .main { display:grid; grid-template-columns:1fr 320px; gap:1rem; padding:1rem 1.5rem; height:calc(100vh - 57px); }
+    .main { display:grid; grid-template-columns:1fr 320px; gap:1rem; padding:1rem 1.5rem; height:calc(100vh - 57px); overflow:hidden; }
 
-    /* ── PANEL IZQUIERDO: GUESTS ── */
     .guests-panel { display:flex; flex-direction:column; gap:1rem; overflow-y:auto; }
     .section-title { font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem; }
-
-    .guest-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:0.75rem; }
+    .guest-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:0.75rem; }
 
     .guest-card { background:var(--surface); border:2px solid var(--border); border-radius:12px; overflow:hidden; transition:border-color 0.2s; }
     .guest-card.on-air { border-color:var(--accent); }
-    .guest-card.speaking { border-color:var(--green); }
-
     .guest-video-wrap { position:relative; aspect-ratio:16/9; background:#000; }
     .guest-video-wrap video { width:100%; height:100%; object-fit:cover; display:block; }
-    .guest-overlay { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; font-size:2rem; opacity:0; transition:opacity 0.2s; pointer-events:none; }
-    .guest-card:not(.on-air) .guest-overlay { opacity:1; }
+    .guest-overlay { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.65); display:flex; align-items:center; justify-content:center; font-size:2rem; transition:opacity 0.2s; pointer-events:none; }
+    .guest-card.on-air .guest-overlay { opacity:0; }
     .on-air-badge { position:absolute; top:8px; left:8px; background:var(--accent); color:#fff; font-size:0.65rem; font-weight:700; padding:2px 7px; border-radius:4px; text-transform:uppercase; letter-spacing:0.5px; display:none; }
     .guest-card.on-air .on-air-badge { display:block; }
-
     .guest-controls { padding:0.65rem 0.85rem; display:flex; align-items:center; gap:0.5rem; }
     .guest-name { font-size:0.88rem; font-weight:600; color:#fff; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .ctrl-icon { width:30px; height:30px; border-radius:6px; border:none; cursor:pointer; font-size:0.9rem; display:flex; align-items:center; justify-content:center; transition:all 0.15s; flex-shrink:0; }
@@ -58,53 +51,45 @@
     .btn-mute-guest.muted { background:#3a1a1a; border-color:#6a2a2a; color:var(--accent); }
     .btn-kick { background:var(--surface2); border:1px solid var(--border); color:var(--muted); }
     .btn-kick:hover { background:#3a1a1a; border-color:#6a2a2a; color:var(--accent); }
-
     .empty-guests { background:var(--surface); border:1px dashed var(--border); border-radius:12px; padding:2.5rem; text-align:center; color:var(--muted); font-size:0.88rem; }
     .empty-guests .empty-icon { font-size:2rem; margin-bottom:0.5rem; }
 
-    /* ── PANEL DERECHO: CONTROLES ── */
     .control-panel { display:flex; flex-direction:column; gap:0.75rem; overflow-y:auto; }
-
     .ctrl-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1rem; }
     .ctrl-card h3 { font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.85rem; }
 
-    /* Mi cámara */
     .my-cam-wrap { aspect-ratio:16/9; background:#000; border-radius:8px; overflow:hidden; margin-bottom:0.75rem; }
     .my-cam-wrap video { width:100%; height:100%; object-fit:cover; }
     .my-cam-controls { display:flex; gap:0.5rem; }
     .my-cam-controls button { flex:1; padding:0.55rem; border-radius:7px; border:none; font-size:0.8rem; font-weight:600; cursor:pointer; transition:all 0.15s; }
-    #btnDirMute  { background:#1a3a1a; border:1px solid #2a5a2a; color:var(--green); }
+    #btnDirMute { background:#1a3a1a; border:1px solid #2a5a2a; color:var(--green); }
     #btnDirMute.muted { background:#3a1a1a; border:1px solid #6a2a2a; color:var(--accent); }
-    #btnDirCam   { background:#0d1f2d; border:1px solid #1a3a4a; color:var(--blue); }
+    #btnDirCam  { background:#0d1f2d; border:1px solid #1a3a4a; color:var(--blue); }
     #btnDirCam.camoff { background:#1a1a1a; border:1px solid var(--border); color:var(--muted); }
 
-    /* Layouts */
     .layout-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.4rem; }
     .layout-btn { aspect-ratio:16/9; border-radius:6px; border:2px solid var(--border); background:var(--surface2); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; transition:all 0.15s; padding:4px; }
     .layout-btn:hover { border-color:var(--blue); }
     .layout-btn.active { border-color:var(--accent); background:#1a0f0a; }
     .layout-icon { display:grid; width:100%; gap:2px; }
-    .layout-icon .cell { background:var(--muted); border-radius:2px; }
+    .layout-icon .cell { background:var(--muted); border-radius:2px; height:10px; }
     .layout-label { font-size:0.58rem; color:var(--muted); text-align:center; margin-top:2px; }
 
-    /* Program monitor mini */
     .program-mini { aspect-ratio:16/9; background:#000; border-radius:8px; overflow:hidden; margin-bottom:0.75rem; position:relative; border:2px solid var(--accent); }
     .program-mini canvas { width:100%; height:100%; display:block; }
     .program-mini-label { position:absolute; top:6px; left:8px; background:var(--accent); color:#fff; font-size:0.6rem; font-weight:700; padding:2px 6px; border-radius:3px; text-transform:uppercase; }
     .btn-open-program { width:100%; padding:0.6rem; border-radius:7px; border:none; font-size:0.82rem; font-weight:600; cursor:pointer; background:var(--accent); color:#fff; transition:all 0.15s; }
     .btn-open-program:hover { background:#ff4422; }
 
-    /* Enlace invitados */
     .link-copy { background:var(--surface2); border:1px solid var(--border); border-radius:7px; padding:0.65rem 0.85rem; font-size:0.75rem; word-break:break-all; color:var(--blue); cursor:pointer; line-height:1.5; }
     .link-copy:hover { background:#0d1a2a; }
 
-    /* Mic level */
     .mic-bar-bg { background:var(--surface2); border-radius:3px; height:5px; overflow:hidden; border:1px solid var(--border); margin-top:0.5rem; }
     .mic-bar { height:5px; width:0%; background:linear-gradient(to right,var(--green),var(--accent)); border-radius:3px; transition:width 0.07s; }
 
     /* SETUP OVERLAY */
-    #setupOverlay { position:fixed; inset:0; background:rgba(0,0,0,0.95); display:flex; align-items:center; justify-content:center; z-index:200; }
-    .setup-card { background:var(--surface); border-radius:16px; padding:2.5rem; width:380px; box-shadow:0 16px 48px rgba(0,0,0,0.8); }
+    #setupOverlay { position:fixed; inset:0; background:rgba(0,0,0,0.95); display:flex; align-items:center; justify-content:center; z-index:200; overflow-y:auto; padding:1rem; }
+    .setup-card { background:var(--surface); border-radius:16px; padding:2.5rem; width:100%; max-width:400px; box-shadow:0 16px 48px rgba(0,0,0,0.8); }
     .setup-brand { text-align:center; margin-bottom:2rem; }
     .setup-brand h2 { font-size:1.6rem; letter-spacing:2px; font-weight:700; }
     .setup-brand h2 span { color:var(--accent); }
@@ -117,9 +102,14 @@
     .btn-refresh-sm:hover { color:#fff; }
     .permission-hint { font-size:0.78rem; color:var(--accent); display:none; padding:0.5rem 0.75rem; background:#1a0a0a; border-radius:6px; border:1px solid #3a1a1a; margin-bottom:0.8rem; line-height:1.5; }
     .setup-select { width:100%; padding:0.75rem 1rem; border-radius:8px; border:1px solid var(--border); background:var(--surface2); color:#fff; font-size:0.9rem; margin-bottom:1rem; -webkit-appearance:none; }
-    .btn-enter { width:100%; padding:0.85rem; border-radius:8px; border:none; font-size:1rem; font-weight:700; cursor:pointer; background:var(--accent); color:#fff; transition:all 0.2s; margin-top:0.25rem; }
-    .btn-enter:disabled { background:var(--border); color:var(--muted); cursor:not-allowed; }
+    .btn-enter { width:100%; padding:0.85rem; border-radius:8px; border:none; font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.2s; margin-top:0.25rem; }
+    .btn-enter-perms { background:#0d1f2d; border:1px solid #1a3a4a; color:var(--blue); margin-bottom:1rem; }
+    .btn-enter-perms:hover { background:#112233; }
+    .btn-enter-main { background:var(--accent); color:#fff; }
+    .btn-enter-main:disabled { background:var(--border); color:var(--muted); cursor:not-allowed; }
+    .btn-enter-main:hover:not(:disabled) { background:#ff4422; }
     .divider { border:none; border-top:1px solid var(--border); margin:1rem 0; }
+    #deviceSelectors { display:none; }
   </style>
 </head>
 <body>
@@ -131,24 +121,42 @@
       <h2>STUDIO <span>+</span></h2>
       <p>Panel de Director</p>
     </div>
+
     <label class="setup-label">Nombre de sala</label>
     <input class="setup-input" type="text" id="roomInput" placeholder="Ej: produccion-live" autocomplete="off">
+
     <label class="setup-label">Contraseña de sala</label>
-    <input class="setup-input" type="password" id="passInput" placeholder="Clave de acceso">
+    <input class="setup-input" type="password" id="passInput" placeholder="Clave de acceso director">
+
     <label class="setup-label">Tu nombre</label>
     <input class="setup-input" type="text" id="nameInput" placeholder="Ej: Carlos — Director" autocomplete="off">
+
     <hr class="divider">
-    <div class="device-row">
-      <label class="setup-label" style="margin:0">Cámara</label>
-      <button class="btn-refresh-sm" onclick="cargarDispositivos()">↻ Actualizar</button>
-    </div>
-    <select class="setup-select" id="camSelect"><option value="">Cargando...</option></select>
-    <label class="setup-label">Micrófono</label>
-    <select class="setup-select" id="micSelect"><option value="">Cargando...</option></select>
+
+    <!-- Botón de permisos — primer paso -->
+    <button class="btn-enter btn-enter-perms" onclick="cargarDispositivos()">
+      📷 Solicitar acceso a cámara y micrófono
+    </button>
+
     <div id="permissionHint" class="permission-hint">
       ⚠️ Permiso denegado. Clic en el candado 🔒 → Permitir cámara y micrófono → recargar.
     </div>
-    <button class="btn-enter" id="btnEnter" onclick="iniciarDirector()" disabled>🎬 Entrar al estudio</button>
+
+    <!-- Selectores — aparecen solo tras permiso -->
+    <div id="deviceSelectors">
+      <div class="device-row">
+        <label class="setup-label" style="margin:0">Cámara</label>
+        <button class="btn-refresh-sm" onclick="cargarDispositivos()">↻ Actualizar</button>
+      </div>
+      <select class="setup-select" id="camSelect"><option value="">—</option></select>
+
+      <label class="setup-label">Micrófono</label>
+      <select class="setup-select" id="micSelect"><option value="">—</option></select>
+    </div>
+
+    <button class="btn-enter btn-enter-main" id="btnEnter" onclick="iniciarDirector()" disabled>
+      🎬 Entrar al estudio
+    </button>
   </div>
 </div>
 
@@ -159,7 +167,10 @@
     <p id="roomLabel">Director</p>
   </div>
   <div class="topbar-right">
-    <div class="status-pill"><span class="dot" id="dot"></span><span id="statusText">Conectando...</span></div>
+    <div class="status-pill">
+      <span class="dot" id="dot"></span>
+      <span id="statusText">Esperando...</span>
+    </div>
     <button class="btn-sm btn-danger" onclick="salirEstudio()">↩ Salir</button>
   </div>
 </div>
@@ -167,7 +178,7 @@
 <!-- MAIN -->
 <div class="main">
 
-  <!-- GUESTS -->
+  <!-- GUESTS PANEL -->
   <div class="guests-panel">
     <div class="section-title">Invitados en sala (<span id="guestCount">0</span>/5)</div>
     <div class="guest-grid" id="guestGrid">
@@ -179,10 +190,9 @@
     </div>
   </div>
 
-  <!-- CONTROLES -->
+  <!-- CONTROL PANEL -->
   <div class="control-panel">
 
-    <!-- Mi cámara -->
     <div class="ctrl-card">
       <h3>Mi cámara (Director)</h3>
       <div class="my-cam-wrap">
@@ -195,15 +205,11 @@
       <div class="mic-bar-bg"><div class="mic-bar" id="micBar"></div></div>
     </div>
 
-    <!-- Layout -->
     <div class="ctrl-card">
       <h3>Layout del programa</h3>
-      <div class="layout-grid" id="layoutGrid">
-        <!-- generado por JS -->
-      </div>
+      <div class="layout-grid" id="layoutGrid"></div>
     </div>
 
-    <!-- Program monitor mini -->
     <div class="ctrl-card">
       <h3>Program Monitor</h3>
       <div class="program-mini">
@@ -213,7 +219,6 @@
       <button class="btn-open-program" onclick="abrirPrograma()">🖥️ Abrir ventana para OBS</button>
     </div>
 
-    <!-- Enlace invitados -->
     <div class="ctrl-card">
       <h3>Enlace para invitados</h3>
       <div class="link-copy" id="guestLink" onclick="copiarEnlaceInvitado()">
@@ -226,65 +231,79 @@
 </div>
 
 <script>
-// ── CONFIG ───────────────────────────────────────────────────
 const STUN = { iceServers:[
   {urls:'stun:stun.l.google.com:19302'},
   {urls:'stun:stun1.l.google.com:19302'}
 ]};
 
 const LAYOUTS = [
-  { id:'full',   label:'Full',   cols:1, rows:1 },
-  { id:'side2',  label:'2 lado', cols:2, rows:1 },
-  { id:'grid4',  label:'Grid 4', cols:2, rows:2 },
-  { id:'grid6',  label:'Grid 6', cols:3, rows:2 }
+  { id:'full',  label:'Full',   cols:1, rows:1 },
+  { id:'side2', label:'2 lado', cols:2, rows:1 },
+  { id:'grid4', label:'Grid 4', cols:2, rows:2 },
+  { id:'grid6', label:'Grid 6', cols:3, rows:2 }
 ];
 
-// ── ESTADO ───────────────────────────────────────────────────
 let ws, localStream, myRoom, myName, myPass;
 let dirMuted = false, dirCamOff = false;
 let currentLayout = 'grid4';
 let audioCtx, analyser, micAnimFrame;
 let programWindow = null;
-
-// guests: Map<guestId, { name, pc, stream, onAir, muted, videoEl }>
 const guests = new Map();
 
-// ── SETUP: CARGAR DISPOSITIVOS ───────────────────────────────
+// ── CARGAR DISPOSITIVOS (requiere clic) ───────────────────────
 async function cargarDispositivos() {
-  const camSel = document.getElementById('camSelect');
-  const micSel = document.getElementById('micSelect');
-  const hint   = document.getElementById('permissionHint');
-  const btnEnter = document.getElementById('btnEnter');
-  camSel.innerHTML = micSel.innerHTML = '<option value="">Cargando...</option>';
-  btnEnter.disabled = true; hint.style.display = 'none';
+  const hint = document.getElementById('permissionHint');
+  hint.style.display = 'none';
+  let tempStream = null;
   try {
-    const tmp = await navigator.mediaDevices.getUserMedia({ video:true, audio:true });
-    tmp.getTracks().forEach(t => t.stop());
-    await new Promise(r => setTimeout(r, 400));
+    tempStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     const devices = await navigator.mediaDevices.enumerateDevices();
-    camSel.innerHTML = ''; micSel.innerHTML = '';
-    devices.filter(d => d.kind === 'videoinput').forEach((d,i) => {
+    tempStream.getTracks().forEach(t => t.stop());
+    tempStream = null;
+
+    const cameras = devices.filter(d => d.kind === 'videoinput');
+    const mics    = devices.filter(d => d.kind === 'audioinput');
+
+    const camSel = document.getElementById('camSelect');
+    const micSel = document.getElementById('micSelect');
+
+    camSel.innerHTML = '';
+    cameras.forEach((d, i) => {
       const o = document.createElement('option');
       o.value = d.deviceId;
-      o.textContent = d.label || `Cámara ${i+1}`;
+      o.textContent = (d.label && d.label.trim()) ? d.label : `Cámara ${i + 1}`;
       camSel.appendChild(o);
     });
-    devices.filter(d => d.kind === 'audioinput').forEach((d,i) => {
+
+    micSel.innerHTML = '';
+    mics.forEach((d, i) => {
       const o = document.createElement('option');
       o.value = d.deviceId;
-      o.textContent = d.label || `Micrófono ${i+1}`;
+      o.textContent = (d.label && d.label.trim()) ? d.label : `Micrófono ${i + 1}`;
       micSel.appendChild(o);
     });
-    btnEnter.disabled = false;
+
+    document.getElementById('deviceSelectors').style.display = 'block';
+    document.getElementById('btnEnter').disabled = false;
+
   } catch(e) {
-    if (e.name === 'NotAllowedError') hint.style.display = 'block';
-    else { camSel.innerHTML = `<option>Error: ${e.message}</option>`; }
+    if (tempStream) tempStream.getTracks().forEach(t => t.stop());
+    if (e.name === 'NotAllowedError') {
+      hint.style.display = 'block';
+    } else if (e.name === 'NotFoundError') {
+      document.getElementById('camSelect').innerHTML = '<option value="">Sin cámara conectada</option>';
+      document.getElementById('micSelect').innerHTML = '<option value="">Sin micrófono conectado</option>';
+      document.getElementById('deviceSelectors').style.display = 'block';
+    } else {
+      alert('Error al acceder a dispositivos: ' + e.message);
+    }
   }
 }
 
-// ── INICIAR COMO DIRECTOR ─────────────────────────────────────
+// ── INICIAR DIRECTOR ──────────────────────────────────────────
 async function iniciarDirector() {
-  myRoom = document.getElementById('roomInput').value.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'') || 'studio-plus';
+  myRoom = document.getElementById('roomInput').value.trim().toLowerCase()
+    .replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'') || 'studio-plus';
   myPass = document.getElementById('passInput').value.trim();
   myName = document.getElementById('nameInput').value.trim() || 'Director';
 
@@ -306,7 +325,6 @@ async function iniciarDirector() {
   iniciarVisualizador();
   renderLayouts();
 
-  // Enlace de invitados
   const guestUrl = `${location.origin}/guest.html?room=${myRoom}`;
   document.getElementById('guestLinkUrl').textContent = guestUrl;
   document.getElementById('guestLink').dataset.link = guestUrl;
@@ -317,7 +335,7 @@ async function iniciarDirector() {
   iniciarCompositor();
 }
 
-// ── WEBSOCKET ────────────────────────────────────────────────
+// ── WEBSOCKET ─────────────────────────────────────────────────
 function conectarWS() {
   const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
   ws = new WebSocket(`${protocol}://${location.host}/signal/${myRoom}?name=${encodeURIComponent(myName)}&role=director&password=${encodeURIComponent(myPass)}`);
@@ -330,28 +348,29 @@ function conectarWS() {
   ws.onmessage = async ({ data }) => {
     const msg = JSON.parse(data);
     switch(msg.type) {
-
       case 'guests-list':
         for (const g of msg.guests) await conectarConGuest(g.id, g.name);
         break;
-
       case 'guest-joined':
         await conectarConGuest(msg.guestId, msg.name);
         break;
-
       case 'guest-left':
         removerGuest(msg.guestId);
         break;
-
       case 'answer':
         if (guests.has(msg.senderId)) {
-          await guests.get(msg.senderId).pc.setRemoteDescription(new RTCSessionDescription(msg.answer));
+          await guests.get(msg.senderId).pc.setRemoteDescription(
+            new RTCSessionDescription(msg.answer)
+          );
         }
         break;
-
       case 'ice-candidate':
         if (guests.has(msg.senderId)) {
-          try { await guests.get(msg.senderId).pc.addIceCandidate(new RTCIceCandidate(msg.candidate)); } catch(e) {}
+          try {
+            await guests.get(msg.senderId).pc.addIceCandidate(
+              new RTCIceCandidate(msg.candidate)
+            );
+          } catch(e) {}
         }
         break;
     }
@@ -368,7 +387,6 @@ async function conectarConGuest(guestId, guestName) {
   const pc = new RTCPeerConnection(STUN);
   guests.set(guestId, { name:guestName, pc, stream:null, onAir:true, muted:false, videoEl:null });
 
-  // Enviar nuestro stream al guest
   localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
 
   pc.ontrack = ({ streams }) => {
@@ -399,11 +417,14 @@ async function conectarConGuest(guestId, guestName) {
 function renderGuests() {
   const grid = document.getElementById('guestGrid');
 
-  // Agregar director como "guest especial" en el compositor
   if (guests.size === 0) {
     grid.innerHTML = `<div class="empty-guests"><div class="empty-icon">📡</div><div>Esperando invitados...</div></div>`;
     return;
   }
+
+  // Limpiar placeholder si existe
+  const placeholder = grid.querySelector('.empty-guests');
+  if (placeholder) placeholder.remove();
 
   for (const [id, g] of guests.entries()) {
     let card = document.getElementById('gcard-' + id);
@@ -431,25 +452,33 @@ function renderGuests() {
             onclick="kickGuest('${id}')">✕</button>
         </div>
       `;
-      grid.innerHTML = grid.querySelector('.empty-guests') ? '' : grid.innerHTML;
       grid.appendChild(card);
 
       const videoEl = document.getElementById('gvideo-' + id);
       g.videoEl = videoEl;
       if (g.stream) videoEl.srcObject = g.stream;
+
     } else {
       card.className = 'guest-card' + (g.onAir ? ' on-air' : '');
+      const toggleBtn = card.querySelector('.btn-toggle');
+      if (toggleBtn) {
+        toggleBtn.className = `ctrl-icon btn-toggle ${g.onAir ? 'active' : ''}`;
+        toggleBtn.title = g.onAir ? 'Quitar del aire' : 'Poner al aire';
+      }
+      const muteBtn = card.querySelector('.btn-mute-guest');
+      if (muteBtn) {
+        muteBtn.className = `ctrl-icon btn-mute-guest ${g.muted ? 'muted' : ''}`;
+      }
     }
   }
 }
 
-// ── CONTROLES DE GUEST ────────────────────────────────────────
+// ── CONTROLES GUEST ───────────────────────────────────────────
 function toggleOnAir(guestId) {
   const g = guests.get(guestId);
   if (!g) return;
   g.onAir = !g.onAir;
   renderGuests();
-  // Notificar al program monitor
   const onAirIds = [...guests.entries()].filter(([,g]) => g.onAir).map(([id]) => id);
   enviarAPrograma({ type:'scene-update', onAirIds, layout:currentLayout });
 }
@@ -475,7 +504,8 @@ function removerGuest(guestId) {
   document.getElementById('gcard-' + guestId)?.remove();
   guests.delete(guestId);
   if (guests.size === 0) {
-    document.getElementById('guestGrid').innerHTML = `<div class="empty-guests"><div class="empty-icon">📡</div><div>Esperando invitados...</div></div>`;
+    document.getElementById('guestGrid').innerHTML =
+      `<div class="empty-guests"><div class="empty-icon">📡</div><div>Esperando invitados...</div></div>`;
   }
   actualizarConteo();
 }
@@ -490,8 +520,7 @@ function toggleDirMute() {
   localStream.getAudioTracks().forEach(t => { t.enabled = !dirMuted; });
   const btn = document.getElementById('btnDirMute');
   btn.textContent = dirMuted ? '🔇 Silenciado' : '🎙️ Activo';
-  btn.className = 'btn' + (dirMuted ? ' muted' : '');
-  document.getElementById('btnDirMute').classList.toggle('muted', dirMuted);
+  btn.classList.toggle('muted', dirMuted);
 }
 
 function toggleDirCam() {
@@ -507,4 +536,159 @@ function renderLayouts() {
   const grid = document.getElementById('layoutGrid');
   grid.innerHTML = '';
   LAYOUTS.forEach(l => {
-    const
+    const btn = document.createElement('div');
+    btn.className = 'layout-btn' + (l.id === currentLayout ? ' active' : '');
+    btn.onclick = () => seleccionarLayout(l.id);
+
+    const icon = document.createElement('div');
+    icon.className = 'layout-icon';
+    icon.style.gridTemplateColumns = `repeat(${l.cols},1fr)`;
+    icon.style.gridTemplateRows    = `repeat(${l.rows},1fr)`;
+    icon.style.gap = '2px';
+    for (let i = 0; i < l.cols * l.rows; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      icon.appendChild(cell);
+    }
+    btn.appendChild(icon);
+
+    const label = document.createElement('div');
+    label.className = 'layout-label';
+    label.textContent = l.label;
+    btn.appendChild(label);
+
+    grid.appendChild(btn);
+  });
+}
+
+function seleccionarLayout(layoutId) {
+  currentLayout = layoutId;
+  renderLayouts();
+  const onAirIds = [...guests.entries()].filter(([,g]) => g.onAir).map(([id]) => id);
+  enviarAPrograma({ type:'scene-update', onAirIds, layout:currentLayout });
+}
+
+// ── COMPOSITOR MINI (preview en panel) ───────────────────────
+function iniciarCompositor() {
+  const canvas = document.getElementById('programCanvas');
+  const ctx    = canvas.getContext('2d');
+  canvas.width  = 1280;
+  canvas.height = 720;
+
+  function drawFrame() {
+    ctx.fillStyle = '#0a0a0a';
+    ctx.fillRect(0, 0, 1280, 720);
+
+    const sources = [];
+    const myVideo = document.getElementById('myVideo');
+    if (myVideo.srcObject) sources.push({ el:myVideo, name:myName });
+
+    for (const [, g] of guests.entries()) {
+      if (g.onAir && g.videoEl && g.stream) {
+        sources.push({ el:g.videoEl, name:g.name });
+      }
+    }
+
+    if (sources.length === 0) {
+      ctx.fillStyle = '#333';
+      ctx.font = '28px Segoe UI';
+      ctx.textAlign = 'center';
+      ctx.fillText('Sin señal de video', 640, 360);
+      requestAnimationFrame(drawFrame);
+      return;
+    }
+
+    const layout = LAYOUTS.find(l => l.id === currentLayout) || LAYOUTS[2];
+    const cols   = Math.min(layout.cols, sources.length);
+    const rows   = Math.ceil(sources.length / cols);
+    const w      = Math.floor(1280 / cols);
+    const h      = Math.floor(720  / rows);
+    const pad    = 4;
+
+    sources.forEach((src, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const x   = col * w + pad;
+      const y   = row * h + pad;
+      const fw  = w - pad * 2;
+      const fh  = h - pad * 2;
+      try { ctx.drawImage(src.el, x, y, fw, fh); } catch(e) {}
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fillRect(x, y + fh - 28, fw, 28);
+      ctx.fillStyle = '#fff';
+      ctx.font = `bold ${Math.max(12, Math.floor(h/18))}px Segoe UI`;
+      ctx.textAlign = 'left';
+      ctx.fillText(src.name, x + 8, y + fh - 8);
+    });
+
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.font = 'bold 18px Segoe UI';
+    ctx.textAlign = 'right';
+    ctx.fillText('STUDIO +', 1270, 710);
+
+    requestAnimationFrame(drawFrame);
+  }
+
+  drawFrame();
+}
+
+// ── VENTANA PROGRAMA (OBS) ────────────────────────────────────
+function abrirPrograma() {
+  const url = `${location.origin}/program.html?room=${myRoom}&pass=${encodeURIComponent(myPass)}`;
+  programWindow = window.open(url, 'StudioPlusProgram', 'width=1280,height=720,resizable=yes');
+}
+
+function enviarAPrograma(data) {
+  if (programWindow && !programWindow.closed) {
+    programWindow.postMessage(data, location.origin);
+  }
+}
+
+// ── SALIR ─────────────────────────────────────────────────────
+function salirEstudio() {
+  if (!confirm('¿Salir del estudio?')) return;
+  if (localStream) localStream.getTracks().forEach(t => t.stop());
+  cancelAnimationFrame(micAnimFrame);
+  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+  guests.forEach(g => g.pc?.close());
+  guests.clear();
+  if (ws && ws.readyState === WebSocket.OPEN) ws.close();
+  location.reload();
+}
+
+// ── VISUALIZADOR MIC ──────────────────────────────────────────
+function iniciarVisualizador() {
+  audioCtx  = new AudioContext();
+  analyser  = audioCtx.createAnalyser(); analyser.fftSize = 512;
+  const src = audioCtx.createMediaStreamSource(localStream);
+  src.connect(analyser);
+  const buf = new Uint8Array(analyser.frequencyBinCount);
+  function tick() {
+    analyser.getByteFrequencyData(buf);
+    const pct = Math.min(100, Math.round(buf.reduce((a,b)=>a+b,0)/buf.length*3));
+    document.getElementById('micBar').style.width = pct + '%';
+    micAnimFrame = requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function setStatus(text, type) {
+  document.getElementById('statusText').textContent = text;
+  document.getElementById('dot').className = 'dot' + (type ? ' ' + type : '');
+}
+
+function copiarEnlaceInvitado() {
+  const link = document.getElementById('guestLink').dataset.link;
+  navigator.clipboard.writeText(link).then(() => {
+    document.getElementById('guestLink').childNodes[0].textContent = '✅ ¡Enlace copiado! ';
+    setTimeout(() => {
+      document.getElementById('guestLink').childNodes[0].textContent = '📋 Clic para copiar enlace\n';
+    }, 2500);
+  });
+}
+
+navigator.mediaDevices.addEventListener('devicechange', cargarDispositivos);
+</script>
+</body>
+</html>

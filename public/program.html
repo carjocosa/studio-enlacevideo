@@ -7,11 +7,11 @@
   <style>
     * { box-sizing:border-box; margin:0; padding:0; }
     html, body { width:100%; height:100%; background:#000; overflow:hidden; }
-    canvas { width:100%; height:100%; display:block; object-fit:contain; }
-    #waitMsg { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#444; font-family:'Segoe UI',sans-serif; }
-    #waitMsg h2 { font-size:1.5rem; letter-spacing:2px; margin-bottom:0.5rem; }
+    canvas { width:100vw; height:100vh; display:block; }
+    #waitMsg { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#333; font-family:'Segoe UI',sans-serif; gap:0.5rem; }
+    #waitMsg h2 { font-size:1.5rem; letter-spacing:2px; }
     #waitMsg h2 span { color:#e63; }
-    #waitMsg p { font-size:0.85rem; color:#333; }
+    #waitMsg p { font-size:0.85rem; color:#222; }
   </style>
 </head>
 <body>
@@ -23,23 +23,20 @@
 <canvas id="outputCanvas" style="display:none"></canvas>
 
 <script>
-const params   = new URLSearchParams(location.search);
-const myRoom   = params.get('room') || '';
-const myPass   = params.get('pass') || '';
+const params = new URLSearchParams(location.search);
+const myRoom = params.get('room') || '';
+const myPass = params.get('pass') || '';
 
 const STUN = { iceServers:[
   {urls:'stun:stun.l.google.com:19302'},
   {urls:'stun:stun1.l.google.com:19302'}
 ]};
 
-let ws;
-// guests en este contexto: Map<guestId, { pc, stream, videoEl }>
 const guestStreams = new Map();
-let directorStream = null;
-let directorVideoEl = null;
 let currentLayout = 'grid4';
 let onAirIds = [];
-let animFrame;
+let animFrame = null;
+let ws;
 
 const LAYOUTS = [
   { id:'full',  cols:1, rows:1 },
@@ -48,29 +45,32 @@ const LAYOUTS = [
   { id:'grid6', cols:3, rows:2 }
 ];
 
-// ── RECIBIR MENSAJES DEL DIRECTOR (misma pestaña origen) ──────
+// ── MENSAJES DEL DIRECTOR (postMessage) ───────────────────────
 window.addEventListener('message', (e) => {
   if (e.origin !== location.origin) return;
   const msg = e.data;
   if (msg.type === 'scene-update') {
-    onAirIds = msg.onAirIds || [];
-    currentLayout = msg.layout || 'grid4';
+    onAirIds      = msg.onAirIds || [];
+    currentLayout = msg.layout   || 'grid4';
   }
 });
 
-// ── WEBSOCKET — recibir streams de invitados ──────────────────
+// ── WEBSOCKET ─────────────────────────────────────────────────
 function conectar() {
   if (!myRoom) return;
   const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  ws = new WebSocket(`${protocol}://${location.host}/signal/${myRoom}?name=Program+Monitor&role=program&password=${encodeURIComponent(myPass)}`);
+  ws = new WebSocket(
+    `${protocol}://${location.host}/signal/${myRoom}?name=Program+Monitor&role=program&password=${encodeURIComponent(myPass)}`
+  );
 
-  ws.onopen = () => console.log('[program] WS conectado');
+  ws.onopen  = () => console.log('[program] conectado');
+  ws.onclose = () => console.log('[program] desconectado');
 
   ws.onmessage = async ({ data }) => {
     const msg = JSON.parse(data);
 
     if (msg.type === 'offer') {
-      await recibirStream(msg.senderId, msg.senderName, msg.senderRole, msg.offer);
+      await recibirStream(msg.senderId, msg.senderName, msg.offer);
     }
     if (msg.type === 'ice-candidate') {
       const s = guestStreams.get(msg.senderId);
@@ -80,20 +80,19 @@ function conectar() {
       const s = guestStreams.get(msg.guestId);
       if (s) { s.pc?.close(); s.videoEl?.remove(); guestStreams.delete(msg.guestId); }
     }
-    if (msg.type === 'force-mute') {
-      // silenciar localmente
-    }
   };
 }
 
-async function recibirStream(senderId, senderName, senderRole, offer) {
+// ── RECIBIR STREAM DE UN PARTICIPANTE ─────────────────────────
+async function recibirStream(senderId, senderName, offer) {
   const pc = new RTCPeerConnection(STUN);
+
   const videoEl = document.createElement('video');
-  videoEl.autoplay = true; videoEl.playsinline = true; videoEl.muted = false;
+  videoEl.autoplay = true; videoEl.playsinline = true; videoEl.muted = true;
   videoEl.style.display = 'none';
   document.body.appendChild(videoEl);
 
-  guestStreams.set(senderId, { pc, stream:null, videoEl, name:senderName });
+  guestStreams.set(senderId, { pc, stream:null, videoEl, name: senderName || 'Invitado' });
 
   pc.ontrack = ({ streams }) => {
     const s = guestStreams.get(senderId);
@@ -105,21 +104,28 @@ async function recibirStream(senderId, senderName, senderRole, offer) {
     if (candidate) ws.send(JSON.stringify({ type:'ice-candidate', candidate, targetId:senderId }));
   };
 
+  pc.onconnectionstatechange = () => {
+    if (['failed','disconnected','closed'].includes(pc.connectionState)) {
+      const s = guestStreams.get(senderId);
+      if (s) { s.videoEl?.remove(); guestStreams.delete(senderId); }
+    }
+  };
+
   await pc.setRemoteDescription(new RTCSessionDescription(offer));
   const answer = await pc.createAnswer();
   await pc.setLocalDescription(answer);
   ws.send(JSON.stringify({ type:'answer', answer, targetId:senderId }));
 }
 
-// ── CANVAS COMPOSITOR ────────────────────────────────────────
+// ── CANVAS COMPOSITOR ─────────────────────────────────────────
 function mostrarCanvas() {
-  document.getElementById('waitMsg').style.display = 'none';
+  document.getElementById('waitMsg').style.display  = 'none';
   const canvas = document.getElementById('outputCanvas');
   canvas.style.display = 'block';
   canvas.width  = 1280;
   canvas.height = 720;
 
-  if (animFrame) return; // ya corriendo
+  if (animFrame) return;
 
   const ctx = canvas.getContext('2d');
 
@@ -127,7 +133,6 @@ function mostrarCanvas() {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, 1280, 720);
 
-    // Streams activos según lo que diga el director
     const sources = [];
     for (const [id, s] of guestStreams.entries()) {
       if (onAirIds.length === 0 || onAirIds.includes(id)) {
@@ -161,7 +166,6 @@ function mostrarCanvas() {
       const fw  = w - pad * 2;
       const fh  = h - pad * 2;
       try { ctx.drawImage(src.videoEl, x, y, fw, fh); } catch(e) {}
-      // Nombre
       ctx.fillStyle = 'rgba(0,0,0,0.5)';
       ctx.fillRect(x, y + fh - 26, fw, 26);
       ctx.fillStyle = '#fff';
@@ -170,7 +174,6 @@ function mostrarCanvas() {
       ctx.fillText(src.name, x + 7, y + fh - 7);
     });
 
-    // Watermark
     ctx.fillStyle = 'rgba(255,255,255,0.12)';
     ctx.font = 'bold 16px Segoe UI';
     ctx.textAlign = 'right';

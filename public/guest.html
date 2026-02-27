@@ -21,11 +21,13 @@
     .btn-refresh { background:none; border:none; color:var(--muted); font-size:0.78rem; cursor:pointer; padding:0; width:auto; }
     .btn-refresh:hover { color:#fff; }
     .permission-hint { font-size:0.78rem; color:var(--accent); display:none; padding:0.5rem 0.75rem; background:#1a0a0a; border-radius:6px; border:1px solid #3a1a1a; margin-bottom:0.8rem; line-height:1.5; }
+    .btn-perms { width:100%; padding:0.85rem; border-radius:8px; border:1px solid #1a3a4a; font-size:1rem; font-weight:700; cursor:pointer; background:#0d1f2d; color:var(--blue); margin-bottom:1rem; }
+    .btn-perms:hover { background:#112233; }
     .btn-join { width:100%; padding:0.85rem; border-radius:8px; border:none; font-size:1rem; font-weight:700; cursor:pointer; background:var(--accent); color:#fff; transition:all 0.2s; }
     .btn-join:disabled { background:var(--border); color:var(--muted); cursor:not-allowed; }
     .btn-join:hover:not(:disabled) { background:#ff4422; transform:translateY(-1px); }
+    #gDeviceSelectors { display:none; }
 
-    /* SALA DE ESPERA */
     #waitRoom { display:none; width:100%; max-width:460px; }
     .preview-wrap { aspect-ratio:16/9; background:#000; border-radius:12px; overflow:hidden; margin-bottom:1rem; position:relative; border:2px solid var(--border); }
     .preview-wrap video { width:100%; height:100%; object-fit:cover; display:block; }
@@ -39,17 +41,17 @@
     .dot.err  { background:var(--accent); }
     .controls-row { display:flex; gap:0.65rem; margin-bottom:1rem; }
     .ctrl-btn { flex:1; padding:0.65rem; border-radius:8px; border:none; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.15s; }
-    #gBtnMute { background:#1a3a1a; border:1px solid #2a5a2a; color:var(--green); }
-    #gBtnMute.muted { background:#3a1a1a; border:1px solid #6a2a2a; color:var(--accent); }
-    #gBtnCam  { background:#0d1f2d; border:1px solid #1a3a4a; color:var(--blue); }
-    #gBtnCam.camoff { background:#1a1a1a; border:1px solid var(--border); color:var(--muted); }
+    #gBtnMute  { background:#1a3a1a; border:1px solid #2a5a2a; color:var(--green); }
+    #gBtnMute.muted  { background:#3a1a1a; border:1px solid #6a2a2a; color:var(--accent); }
+    #gBtnCam   { background:#0d1f2d; border:1px solid #1a3a4a; color:var(--blue); }
+    #gBtnCam.camoff  { background:#1a1a1a; border:1px solid var(--border); color:var(--muted); }
     #gBtnLeave { background:var(--surface2); border:1px solid var(--border); color:var(--muted); }
     #gBtnLeave:hover { border-color:var(--accent); color:var(--accent); }
     .mic-bar-bg { background:var(--surface2); border-radius:3px; height:5px; overflow:hidden; border:1px solid var(--border); }
     .mic-bar { height:5px; width:0%; background:linear-gradient(to right,var(--green),var(--accent)); border-radius:3px; transition:width 0.07s; }
     .room-badge { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:0.5rem 0.85rem; font-size:0.8rem; color:var(--muted); text-align:center; margin-bottom:1rem; }
     .room-badge strong { color:var(--blue); }
-    .kicked-msg { display:none; background:#1a0a0a; border:1px solid #6a2a2a; border-radius:10px; padding:1.5rem; text-align:center; color:var(--accent); }
+    .kicked-msg { display:none; background:#1a0a0a; border:1px solid #6a2a2a; border-radius:10px; padding:1.5rem; text-align:center; color:var(--accent); max-width:400px; }
   </style>
 </head>
 <body>
@@ -63,21 +65,36 @@
 <div class="card" id="setupCard">
   <label>Tu nombre</label>
   <input type="text" id="gNameInput" placeholder="Ej: Reportero en campo" maxlength="30" autocomplete="off">
+
   <hr class="divider">
-  <div class="device-row">
-    <label style="margin:0">Cámara</label>
-    <button class="btn-refresh" onclick="cargarDispositivos()">↻ Actualizar</button>
-  </div>
-  <select id="gCamSelect"><option value="">Cargando...</option></select>
-  <label>Micrófono</label>
-  <select id="gMicSelect"><option value="">Cargando...</option></select>
+
+  <!-- Botón de permisos -->
+  <button class="btn-perms" onclick="cargarDispositivos()">
+    📷 Solicitar acceso a cámara y micrófono
+  </button>
+
   <div id="gPermHint" class="permission-hint">
     ⚠️ Permiso denegado. Clic en el candado 🔒 → Cámara y Micrófono → Permitir → recargar.
   </div>
-  <button class="btn-join" id="gBtnJoin" onclick="unirseComoGuest()" disabled>📡 Conectar al estudio</button>
+
+  <!-- Selectores — aparecen tras permiso -->
+  <div id="gDeviceSelectors">
+    <div class="device-row">
+      <label style="margin:0">Cámara</label>
+      <button class="btn-refresh" onclick="cargarDispositivos()">↻ Actualizar</button>
+    </div>
+    <select id="gCamSelect"><option value="">—</option></select>
+
+    <label>Micrófono</label>
+    <select id="gMicSelect"><option value="">—</option></select>
+  </div>
+
+  <button class="btn-join" id="gBtnJoin" onclick="unirseComoGuest()" disabled>
+    📡 Conectar al estudio
+  </button>
 </div>
 
-<!-- SALA DE ESPERA / EN VIVO -->
+<!-- SALA EN VIVO -->
 <div id="waitRoom">
   <div class="room-badge">Sala: <strong id="gRoomDisplay">—</strong></div>
   <div class="preview-wrap">
@@ -101,7 +118,9 @@
   <div style="font-size:2rem;margin-bottom:0.5rem">🚫</div>
   <div style="font-size:1rem;font-weight:700;margin-bottom:0.25rem">Has sido expulsado de la sala</div>
   <div style="font-size:0.85rem;color:#a55">El director ha terminado tu conexión</div>
-  <button style="margin-top:1rem;padding:0.6rem 1.5rem;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer" onclick="location.reload()">Reconectar</button>
+  <button style="margin-top:1rem;padding:0.6rem 1.5rem;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer" onclick="location.reload()">
+    Reconectar
+  </button>
 </div>
 
 <script>
@@ -117,18 +136,198 @@ let ws, localStream, directorPc;
 let gMuted = false, gCamOff = false;
 let audioCtx, analyser, micAnimFrame;
 
-// Pre-rellenar sala desde URL
-if (roomParam) document.getElementById('gNameInput').placeholder = 'Tu nombre';
-
+// ── CARGAR DISPOSITIVOS (requiere clic) ───────────────────────
 async function cargarDispositivos() {
-  const camSel = document.getElementById('gCamSelect');
-  const micSel = document.getElementById('gMicSelect');
-  const hint   = document.getElementById('gPermHint');
-  const btnJoin= document.getElementById('gBtnJoin');
-  camSel.innerHTML = micSel.innerHTML = '<option value="">Cargando...</option>';
-  btnJoin.disabled = true; hint.style.display = 'none';
+  const hint    = document.getElementById('gPermHint');
+  const btnJoin = document.getElementById('gBtnJoin');
+  hint.style.display = 'none';
+  let tempStream = null;
   try {
-    const tmp = await navigator.mediaDevices.getUserMedia({ video:true, audio:true });
-    tmp.getTracks().forEach(t => t.stop());
-    await new Promise(r => setTimeout(r, 400));
-    const devices
+    tempStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    tempStream.getTracks().forEach(t => t.stop());
+    tempStream = null;
+
+    const cameras = devices.filter(d => d.kind === 'videoinput');
+    const mics    = devices.filter(d => d.kind === 'audioinput');
+
+    const camSel = document.getElementById('gCamSelect');
+    const micSel = document.getElementById('gMicSelect');
+
+    camSel.innerHTML = '';
+    cameras.forEach((d, i) => {
+      const o = document.createElement('option');
+      o.value = d.deviceId;
+      o.textContent = (d.label && d.label.trim()) ? d.label : `Cámara ${i + 1}`;
+      camSel.appendChild(o);
+    });
+
+    micSel.innerHTML = '';
+    mics.forEach((d, i) => {
+      const o = document.createElement('option');
+      o.value = d.deviceId;
+      o.textContent = (d.label && d.label.trim()) ? d.label : `Micrófono ${i + 1}`;
+      micSel.appendChild(o);
+    });
+
+    document.getElementById('gDeviceSelectors').style.display = 'block';
+    btnJoin.disabled = false;
+
+  } catch(e) {
+    if (tempStream) tempStream.getTracks().forEach(t => t.stop());
+    if (e.name === 'NotAllowedError') {
+      hint.style.display = 'block';
+    } else if (e.name === 'NotFoundError') {
+      document.getElementById('gCamSelect').innerHTML = '<option value="">Sin cámara conectada</option>';
+      document.getElementById('gMicSelect').innerHTML = '<option value="">Sin micrófono conectado</option>';
+      document.getElementById('gDeviceSelectors').style.display = 'block';
+    } else {
+      alert('Error al acceder a dispositivos: ' + e.message);
+    }
+  }
+}
+
+// ── UNIRSE COMO GUEST ─────────────────────────────────────────
+async function unirseComoGuest() {
+  const myName = document.getElementById('gNameInput').value.trim() || 'Invitado';
+  const room   = roomParam || 'studio-plus';
+  const camId  = document.getElementById('gCamSelect').value;
+  const micId  = document.getElementById('gMicSelect').value;
+
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({
+      video: camId ? { deviceId:{ exact:camId } } : true,
+      audio: micId
+        ? { deviceId:{ exact:micId }, echoCancellation:false, noiseSuppression:false }
+        : { echoCancellation:false, noiseSuppression:false }
+    });
+  } catch(e) { alert('No se pudo acceder a cámara/micrófono: ' + e.message); return; }
+
+  document.getElementById('gMyVideo').srcObject = localStream;
+  document.getElementById('gRoomDisplay').textContent = room;
+  document.getElementById('setupCard').style.display = 'none';
+  document.getElementById('waitRoom').style.display  = 'block';
+
+  iniciarVisualizador();
+
+  const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+  ws = new WebSocket(`${protocol}://${location.host}/signal/${room}?name=${encodeURIComponent(myName)}&role=guest`);
+
+  ws.onopen  = () => setGStatus('Conectado — esperando director', 'ok');
+  ws.onclose = () => setGStatus('Desconectado', 'err');
+  ws.onerror = () => setGStatus('Error de conexión', 'err');
+
+  ws.onmessage = async ({ data }) => {
+    const msg = JSON.parse(data);
+    if (msg.type === 'offer') {
+      await manejarOffer(msg.senderId, msg.offer);
+    }
+    if (msg.type === 'ice-candidate') {
+      if (directorPc) {
+        try { await directorPc.addIceCandidate(new RTCIceCandidate(msg.candidate)); } catch(e) {}
+      }
+    }
+    if (msg.type === 'force-mute') {
+      gMuted = msg.muted;
+      localStream.getAudioTracks().forEach(t => { t.enabled = !gMuted; });
+      const btn = document.getElementById('gBtnMute');
+      btn.textContent = gMuted ? '🔇 Silenciado (director)' : '🎙️ Activo';
+      btn.classList.toggle('muted', gMuted);
+    }
+    if (msg.type === 'kicked') {
+      mostrarExpulsado();
+    }
+    if (msg.type === 'director-disconnected') {
+      setGStatus('Director desconectado — espera...', 'warn');
+      document.getElementById('onAirIndicator').classList.remove('show');
+    }
+  };
+}
+
+// ── MANEJAR OFFER DEL DIRECTOR ────────────────────────────────
+async function manejarOffer(directorId, offer) {
+  if (directorPc) { directorPc.close(); }
+  directorPc = new RTCPeerConnection(STUN);
+
+  localStream.getTracks().forEach(t => directorPc.addTrack(t, localStream));
+
+  directorPc.onicecandidate = ({ candidate }) => {
+    if (candidate) ws.send(JSON.stringify({ type:'ice-candidate', candidate, targetId:directorId }));
+  };
+
+  directorPc.onconnectionstatechange = () => {
+    if (directorPc.connectionState === 'connected') {
+      setGStatus('🔴 Conectado al estudio', 'ok');
+      document.getElementById('onAirIndicator').classList.add('show');
+    }
+    if (['failed','disconnected'].includes(directorPc.connectionState)) {
+      setGStatus('Conexión interrumpida', 'warn');
+      document.getElementById('onAirIndicator').classList.remove('show');
+    }
+  };
+
+  await directorPc.setRemoteDescription(new RTCSessionDescription(offer));
+  const answer = await directorPc.createAnswer();
+  await directorPc.setLocalDescription(answer);
+  ws.send(JSON.stringify({ type:'answer', answer, targetId:directorId }));
+}
+
+// ── CONTROLES ─────────────────────────────────────────────────
+function toggleGMute() {
+  gMuted = !gMuted;
+  localStream.getAudioTracks().forEach(t => { t.enabled = !gMuted; });
+  const btn = document.getElementById('gBtnMute');
+  btn.textContent = gMuted ? '🔇 Silenciado' : '🎙️ Activo';
+  btn.classList.toggle('muted', gMuted);
+}
+
+function toggleGCam() {
+  gCamOff = !gCamOff;
+  localStream.getVideoTracks().forEach(t => { t.enabled = !gCamOff; });
+  const btn = document.getElementById('gBtnCam');
+  btn.textContent = gCamOff ? '🚫 Cámara OFF' : '📷 Cámara ON';
+  btn.classList.toggle('camoff', gCamOff);
+}
+
+function salirGuest() {
+  if (localStream) localStream.getTracks().forEach(t => t.stop());
+  cancelAnimationFrame(micAnimFrame);
+  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+  directorPc?.close();
+  if (ws && ws.readyState === WebSocket.OPEN) ws.close();
+  document.getElementById('waitRoom').style.display  = 'none';
+  document.getElementById('setupCard').style.display = 'block';
+}
+
+function mostrarExpulsado() {
+  if (localStream) localStream.getTracks().forEach(t => t.stop());
+  directorPc?.close();
+  if (ws) ws.close();
+  document.getElementById('waitRoom').style.display  = 'none';
+  document.getElementById('setupCard').style.display = 'none';
+  document.getElementById('kickedMsg').style.display = 'block';
+}
+
+// ── VISUALIZADOR ──────────────────────────────────────────────
+function iniciarVisualizador() {
+  audioCtx = new AudioContext(); analyser = audioCtx.createAnalyser(); analyser.fftSize = 512;
+  const src = audioCtx.createMediaStreamSource(localStream); src.connect(analyser);
+  const buf = new Uint8Array(analyser.frequencyBinCount);
+  function tick() {
+    analyser.getByteFrequencyData(buf);
+    const pct = Math.min(100, Math.round(buf.reduce((a,b)=>a+b,0)/buf.length*3));
+    document.getElementById('gMicBar').style.width = pct + '%';
+    micAnimFrame = requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+function setGStatus(text, type) {
+  document.getElementById('gStatusText').textContent = text;
+  document.getElementById('gDot').className = 'dot' + (type ? ' ' + type : '');
+}
+
+navigator.mediaDevices.addEventListener('devicechange', cargarDispositivos);
+</script>
+</body>
+</html>
