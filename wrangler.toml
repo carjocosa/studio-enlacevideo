@@ -1,0 +1,15 @@
+name = "studio-plus-video"
+main = "src/worker.js"
+compatibility_date = "2025-04-01"
+
+[assets]
+directory = "./public"
+
+[durable_objects]
+bindings = [
+  { name = "STUDIO_ROOM", class_name = "StudioRoom" }
+]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["StudioRoom"]
